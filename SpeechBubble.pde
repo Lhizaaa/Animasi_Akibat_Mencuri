@@ -81,19 +81,23 @@ class DialogQueue {
 
   // dialog dari karakter (tanpa suara)
   void add(Character spk, String txt, float start, float dur) {
-    lines.add(new DialogLine(spk, txt, start, dur, 0, 0, false, null));
+    lines.add(new DialogLine(spk, txt, start, dur, 0, 0, false, null, 1.0, 0));
   }
   // dialog dari karakter + file suara dubbing
   void add(Character spk, String txt, float start, float dur, String soundPath) {
-    lines.add(new DialogLine(spk, txt, start, dur, 0, 0, false, loadVoice(soundPath)));
+    lines.add(new DialogLine(spk, txt, start, dur, 0, 0, false, loadVoice(soundPath), 1.0, 0));
   }
   // dialog dari posisi tetap (mis. suara hewan), tanpa suara
   void addAt(float px, float py, String txt, float start, float dur) {
-    lines.add(new DialogLine(null, txt, start, dur, px, py, true, null));
+    lines.add(new DialogLine(null, txt, start, dur, px, py, true, null, 1.0, 0));
   }
   // dialog dari posisi tetap + file suara
   void addAt(float px, float py, String txt, float start, float dur, String soundPath) {
-    lines.add(new DialogLine(null, txt, start, dur, px, py, true, loadVoice(soundPath)));
+    lines.add(new DialogLine(null, txt, start, dur, px, py, true, loadVoice(soundPath), 1.0, 0));
+  }
+  // dialog dari posisi tetap + file suara + volume custom (0..1) + batas durasi suara (detik, 0 = full)
+  void addAt(float px, float py, String txt, float start, float dur, String soundPath, float vol, float maxSoundDur) {
+    lines.add(new DialogLine(null, txt, start, dur, px, py, true, loadVoice(soundPath), vol, maxSoundDur));
   }
 
   // dialog yang aktif pada waktu t (detik dalam scene)
@@ -116,10 +120,13 @@ class DialogLine {
   float px, py;          // posisi tetap (jika fixed)
   boolean fixed;
   SoundFile voice;        // suara baris ini (boleh null)
+  float vol;              // volume suara (0..1)
+  float maxSoundDur;      // batas durasi suara diputar (detik, 0 = sampai habis)
 
-  DialogLine(Character spk, String txt, float st, float du, float px, float py, boolean fixed, SoundFile voice) {
+  DialogLine(Character spk, String txt, float st, float du, float px, float py, boolean fixed, SoundFile voice, float vol, float maxSoundDur) {
     this.speaker = spk; this.text = txt; this.start = st; this.dur = du;
     this.px = px; this.py = py; this.fixed = fixed; this.voice = voice;
+    this.vol = vol; this.maxSoundDur = maxSoundDur;
   }
 }
 
@@ -131,7 +138,7 @@ void drawDialog(DialogQueue dq, float t) {
   // baru masuk baris ini -> putar suaranya sekali
   if (d != dq.lastActive) {
     dq.lastActive = d;
-    playVoice(d.voice);
+    playVoice(d.voice, d.vol, d.maxSoundDur);
   }
 
   if (d.fixed) {

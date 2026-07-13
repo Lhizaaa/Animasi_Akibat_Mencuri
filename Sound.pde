@@ -71,9 +71,35 @@ SoundFile loadFile(String path) {
 
 // putar 1 suara sekali dari awal
 void playVoice(SoundFile sf) {
+  playVoice(sf, 1.0, 0);
+}
+
+// putar 1 suara dengan volume custom (0..1) & batas durasi maks (detik, 0 = sampai habis)
+void playVoice(SoundFile sf, float vol, float maxDur) {
   if (sf == null) return;
   if (sf.isPlaying()) sf.stop();
+  sf.amp(vol);
   sf.play();
+  if (maxDur > 0) {
+    float stopAt = millis() + maxDur * 1000;
+    voiceStopTimes.put(sf, stopAt);
+  }
+}
+
+// map suara -> waktu (ms) kapan harus dihentikan otomatis (dipotong durasinya)
+HashMap<SoundFile, Float> voiceStopTimes = new HashMap<SoundFile, Float>();
+
+// dipanggil tiap frame (draw()) untuk memotong suara yang sudah lewat batas durasinya
+void updateVoiceTrims() {
+  float now = millis();
+  ArrayList<SoundFile> done = new ArrayList<SoundFile>();
+  for (SoundFile sf : voiceStopTimes.keySet()) {
+    if (now >= voiceStopTimes.get(sf)) {
+      if (sf.isPlaying()) sf.stop();
+      done.add(sf);
+    }
+  }
+  for (SoundFile sf : done) voiceStopTimes.remove(sf);
 }
 
 // hentikan semua dialog/sfx yang sedang berbunyi

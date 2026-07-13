@@ -146,7 +146,7 @@ void initDialog() {
   // SCENE 2 : Warung desa (47 dtk)
   dq2 = new DialogQueue();
   dq2.add(rangga,  " Aduh perutku lagi Lapar nih.. mau beli tapi nggak punya uang. Ambil diam-diam aja kali yaa.", 6, 9, "dialog/Rangga/Rangga 4.mp3");
-  dq2.addAt(560, 560, "Meong meong!", 22, 5, "sfx/Suara kucing.mp3");                   // suara kucing
+  dq2.addAt(560, 560, "Meong meong!", 22, 5, "sfx/Suara kucing.mp3", 0.1, 9);                   // suara kucing
   dq2.add(rangga,  "Diam kamu, nanti aku ketahuan!", 33, 4, "dialog/Rangga/Rangga 5.mp3");
   dq2.add(pakBudi, "Anak itu lagi... dari kemarin kelakuannya nggak berubah.", 40, 6, "dialog/Pak Budi/Pak budi 2.mp3");
 

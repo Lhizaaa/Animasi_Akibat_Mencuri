@@ -66,6 +66,7 @@ void setup() {
 }
 
 void draw() {
+  updateVoiceTrims();
   if (!paused) sceneManager.update();
 
   background(0);
